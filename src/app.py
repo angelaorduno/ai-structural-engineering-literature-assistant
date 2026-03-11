@@ -117,21 +117,31 @@ def retrieve_context(question: str, index, all_chunks, chunk_sources, top_k: int
     return context, retrieved_chunks, retrieved_sources, unique_sources
 
 
-def build_prompt(question: str, context: str, chat_history: list[dict]) -> str:
+def build_prompt(question: str, context: str, chat_history: list[dict], sources: list[str]) -> str:
     history_text = ""
     for msg in chat_history[-6:]:
         role = msg["role"].capitalize()
         history_text += f"{role}: {msg['content']}\n"
+
+    source_list = "\n".join(f"- {src}" for src in sources)
 
     return f"""
 You are an academic assistant helping analyze structural engineering and AI literature.
 
 Use only the provided context to answer the question clearly and accurately.
 If the answer is not supported by the context, say so.
-When useful, synthesize themes across multiple papers.
+
+When you answer:
+1. Synthesize information clearly and academically.
+2. If possible, mention which source files support the answer.
+3. End your response with a short section titled "Sources Used" and list the relevant source file names.
+4. Do not invent citations or papers not provided.
 
 Recent conversation:
 {history_text}
+
+Available sources:
+{source_list}
 
 Context:
 {context}
@@ -215,7 +225,7 @@ if question:
                     question, index, all_chunks, chunk_sources, top_k=5
                 )
 
-                prompt = build_prompt(question, context, st.session_state.messages[:-1])
+                prompt = build_prompt(question, context, st.session_state.messages[:-1], unique_sources)
 
                 response = client.chat.completions.create(
                     model="gpt-4o-mini",
@@ -223,7 +233,10 @@ if question:
                 )
 
                 answer = response.choices[0].message.content
-                st.write(answer)
+                # Academic citation section
+                st.markdown("### Sources Used")
+                for src in unique_sources:
+                    st.write(f"- {src}")
 
                 with st.expander("Sources"):
                     for src in unique_sources:
