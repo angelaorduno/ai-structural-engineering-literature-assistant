@@ -18,7 +18,7 @@ ENV_PATH = BASE_DIR / ".env"
 
 load_dotenv(dotenv_path=ENV_PATH)
 
-api_key = = st.secrets.get("OPENAI_API_KEY", os.getenv("OPENAI_API_KEY"))
+api_key = st.secrets.get("OPENAI_API_KEY", os.getenv("OPENAI_API_KEY"))
 client = OpenAI(api_key=api_key)
 
 # -------------------------
