@@ -18,7 +18,10 @@ ENV_PATH = BASE_DIR / ".env"
 
 load_dotenv(dotenv_path=ENV_PATH)
 
-api_key = st.secrets.get("OPENAI_API_KEY", os.getenv("OPENAI_API_KEY"))
+try:
+    api_key = st.secrets["OPENAI_API_KEY"]
+except Exception:
+    api_key = os.getenv("OPENAI_API_KEY")
 client = OpenAI(api_key=api_key)
 
 # -------------------------
@@ -233,10 +236,9 @@ if question:
                 )
 
                 answer = response.choices[0].message.content
-                # Academic citation section
-                st.markdown("### Sources Used")
-                for src in unique_sources:
-                    st.write(f"- {src}")
+                # Show the answer first
+                st.markdown("### Answer")
+                st.write(answer)
 
                 with st.expander("Sources"):
                     for src in unique_sources:
