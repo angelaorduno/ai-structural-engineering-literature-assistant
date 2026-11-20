@@ -182,7 +182,7 @@ This tool can support:
 ## 👩‍💻 Author
 
 **Angela Diaz**  
-PhD Candidate — Data Science  
+PhD Student — Data Science  
 Focus: **AI, Optimization, and Applied Engineering Systems**
 
 ---
